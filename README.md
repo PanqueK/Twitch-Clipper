@@ -57,15 +57,19 @@ Todo o processamento acontece **localmente no computador do usuário**, utilizan
 
 ---
 
-## 🚀 Download e instalação
+## 📥 Download
 
-Para usuários finais, basta baixar:
+### ⭐ Recomendado — Instalador
 
-```text
-Twitch-Clipper-1.3.0-Setup.exe
-```
+**Twitch Clipper 1.3.0 Setup**
 
-Execute o instalador e siga as instruções.
+Instala o aplicativo no Windows e cria atalhos automaticamente.
+
+### 🟢 Versão Portátil
+
+**Twitch Clipper 1.3.0 Portable**
+
+Não requer instalação. Baixe, execute e use.
 
 ### Requisitos
 
