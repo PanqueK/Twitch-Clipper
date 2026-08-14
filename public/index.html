@@ -1,0 +1,1941 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Twitch Clipper Desktop</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+
+    margin: 0;
+
+    min-height: 100vh;
+
+    background:
+        radial-gradient(
+            circle at top,
+            #24104d,
+            #0e0e10 55%
+        );
+
+    color: white;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    display: flex;
+
+    justify-content: center;
+
+    padding: 40px 20px;
+}
+
+.container {
+
+    width: 100%;
+
+    max-width: 900px;
+
+    background: #18181b;
+
+    border: 1px solid #2f2f35;
+
+    border-radius: 18px;
+
+    padding: 30px;
+
+    box-shadow:
+        0 20px 60px
+        rgba(0,0,0,.5);
+}
+
+h1 {
+
+    margin-top: 0;
+
+    color: #a970ff;
+
+    font-size: 32px;
+}
+
+.subtitle {
+
+    color: #aaa;
+
+    margin-bottom: 25px;
+}
+
+.twitch-box {
+
+    margin-bottom: 25px;
+
+    padding: 20px;
+
+    background: #201b29;
+
+    border: 1px solid #3a3150;
+
+    border-radius: 14px;
+}
+
+.twitch-title {
+
+    color: #a970ff;
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+    margin-bottom: 8px;
+}
+
+.twitch-description {
+
+    color: #999;
+
+    font-size: 14px;
+
+    margin-bottom: 15px;
+}
+
+.twitch-input-row {
+
+    display: flex;
+
+    gap: 10px;
+}
+
+#twitchUrl {
+
+    flex: 1;
+
+    padding: 13px;
+
+    border-radius: 8px;
+
+    border: 1px solid #444;
+
+    background: #0e0e10;
+
+    color: white;
+
+    font-size: 15px;
+}
+
+#twitchUrl:focus {
+
+    outline: none;
+
+    border-color: #9147ff;
+}
+
+#twitchButton {
+
+    width: auto;
+
+    margin-top: 0;
+
+    padding: 13px 20px;
+
+    white-space: nowrap;
+}
+
+.vod-info {
+
+    display: none;
+
+    margin-top: 15px;
+
+    padding: 14px;
+
+    background: #15151a;
+
+    border-radius: 8px;
+
+    color: #ccc;
+}
+
+.vod-title {
+
+    color: white;
+
+    font-weight: bold;
+
+    margin-bottom: 5px;
+
+    word-break: break-word;
+}
+
+.vod-duration {
+
+    color: #aaa;
+
+    font-size: 14px;
+}
+
+.upload {
+
+    display: block;
+
+    width: 100%;
+
+    border: 2px dashed #3f3f46;
+
+    border-radius: 14px;
+
+    padding: 35px 20px;
+
+    text-align: center;
+
+    cursor: pointer;
+
+    transition:
+        border-color .2s,
+        background .2s;
+}
+
+.upload:hover {
+
+    border-color: #9147ff;
+
+    background:
+        rgba(145, 71, 255, 0.08);
+}
+
+.upload input {
+
+    display: none;
+}
+
+.upload-icon {
+
+    font-size: 38px;
+
+    margin-bottom: 10px;
+}
+
+.upload-hint {
+
+    margin-top: 8px;
+
+    color: #888;
+
+    font-size: 14px;
+}
+
+.upload-text {
+
+    font-size: 18px;
+
+    font-weight: bold;
+}
+
+#filename {
+
+    margin-top: 8px;
+
+    color: #aaa;
+}
+
+video {
+
+    width: 100%;
+
+    margin-top: 25px;
+
+    border-radius: 10px;
+
+    background: black;
+
+    display: none;
+}
+
+.controls {
+
+    margin-top: 25px;
+
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 20px;
+}
+
+.field label {
+
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #bbb;
+}
+
+.field input {
+
+    width: 100%;
+
+    padding: 12px;
+
+    border-radius: 8px;
+
+    border: 1px solid #444;
+
+    background: #0e0e10;
+
+    color: white;
+
+    font-size: 16px;
+}
+
+.timeline-container {
+
+    position: relative;
+
+    margin-top: 30px;
+
+    height: 45px;
+}
+
+.timeline {
+
+    position: absolute;
+
+    top: 15px;
+
+    left: 0;
+
+    right: 0;
+
+    height: 10px;
+
+    background: #333;
+
+    border-radius: 10px;
+}
+
+.selection {
+
+    position: absolute;
+
+    height: 100%;
+
+    background: #9147ff;
+
+    border-radius: 10px;
+
+    left: 0;
+
+    width: 100%;
+
+    pointer-events: none;
+}
+
+.timeline input[type="range"] {
+
+    position: absolute;
+
+    left: 0;
+
+    top: -7px;
+
+    width: 100%;
+
+    height: 25px;
+
+    margin: 0;
+
+    background: transparent;
+
+    pointer-events: none;
+
+    appearance: none;
+}
+
+.timeline input[type="range"]::-webkit-slider-runnable-track {
+
+    height: 10px;
+
+    background: transparent;
+}
+
+.timeline input[type="range"]::-webkit-slider-thumb {
+
+    appearance: none;
+
+    width: 20px;
+
+    height: 20px;
+
+    margin-top: -5px;
+
+    border-radius: 50%;
+
+    background: white;
+
+    border: 3px solid #9147ff;
+
+    cursor: grab;
+
+    pointer-events: auto;
+
+    box-shadow:
+        0 2px 8px rgba(0,0,0,.5);
+}
+
+.timeline input[type="range"]::-webkit-slider-thumb:active {
+
+    cursor: grabbing;
+}
+
+.time-row {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    margin-top: 8px;
+
+    color: #aaa;
+}
+
+button {
+
+    margin-top: 25px;
+
+    width: 100%;
+
+    padding: 15px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: #9147ff;
+
+    color: white;
+
+    font-size: 17px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+button:hover {
+
+    background: #772ce8;
+}
+
+button:disabled {
+
+    opacity: .5;
+
+    cursor: not-allowed;
+}
+
+#status {
+
+    margin-top: 20px;
+
+    text-align: center;
+
+    color: #bbb;
+
+    min-height: 22px;
+}
+
+#download {
+
+    display: none;
+
+    margin-top: 15px;
+
+    padding: 15px;
+
+    background: #00a64f;
+
+    color: white;
+
+    text-align: center;
+
+    border-radius: 10px;
+
+    text-decoration: none;
+
+    font-weight: bold;
+}
+
+.progress {
+
+    display: none;
+
+    margin-top: 15px;
+
+    height: 8px;
+
+    background: #333;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+}
+
+.progress-bar {
+
+    width: 0%;
+
+    height: 100%;
+
+    background: #9147ff;
+
+    transition: width .3s;
+}
+
+@media(max-width:600px) {
+
+    .twitch-input-row {
+
+        flex-direction: column;
+    }
+
+    #twitchButton {
+
+        width: 100%;
+    }
+
+    .controls {
+
+        grid-template-columns: 1fr;
+    }
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🎬 Twitch Clipper</h1>
+
+<div class="subtitle">
+    Corte seus vídeos rapidamente sem baixar o VOD inteiro.
+</div>
+
+
+<!-- =====================================
+     TWITCH
+===================================== -->
+
+<div class="twitch-box">
+
+    <div class="twitch-title">
+        🔴 Usar VOD da Twitch
+    </div>
+
+    <div class="twitch-description">
+
+        Cole a URL do VOD.
+        Primeiro consultaremos apenas as informações.
+        O vídeo só será baixado quando você gerar o clip.
+
+    </div>
+
+    <div class="twitch-input-row">
+
+        <input
+            type="text"
+            id="twitchUrl"
+            placeholder="https://www.twitch.tv/videos/123456789"
+        >
+
+        <button
+            type="button"
+            id="twitchButton"
+        >
+            📥 CARREGAR VOD
+        </button>
+
+    </div>
+
+
+    <div
+        id="vodInfo"
+        class="vod-info"
+    >
+
+        <div
+            id="vodTitle"
+            class="vod-title"
+        ></div>
+
+        <div
+            id="vodDuration"
+            class="vod-duration"
+        ></div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================
+     UPLOAD LOCAL
+===================================== -->
+
+<label class="upload">
+
+    <input
+        type="file"
+        id="videoInput"
+        accept="video/*"
+    >
+
+    <div class="upload-icon">
+        📁
+    </div>
+
+    <div class="upload-text">
+        Clique para selecionar um vídeo
+    </div>
+
+    <div class="upload-hint">
+        MP4, MKV, WebM ou MOV
+    </div>
+
+    <div id="filename">
+        Nenhum vídeo selecionado
+    </div>
+
+</label>
+
+
+<!-- =====================================
+     PLAYER
+===================================== -->
+
+<video
+    id="preview"
+    controls
+></video>
+
+
+<!-- =====================================
+     CONTROLES
+===================================== -->
+
+<div class="controls">
+
+    <div class="field">
+
+        <label>
+            Início
+        </label>
+
+        <input
+            id="start"
+            value="00:00:00"
+        >
+
+    </div>
+
+
+    <div class="field">
+
+        <label>
+            Fim
+        </label>
+
+        <input
+            id="end"
+            value="00:00:10"
+        >
+
+    </div>
+
+</div>
+
+
+<!-- =====================================
+     TIMELINE
+===================================== -->
+
+<div class="timeline-container">
+
+    <div class="timeline">
+
+        <div
+            id="selection"
+            class="selection"
+        ></div>
+
+
+        <input
+            type="range"
+            id="startRange"
+            min="0"
+            max="0"
+            value="0"
+            step="0.01"
+        >
+
+
+        <input
+            type="range"
+            id="endRange"
+            min="0"
+            max="0"
+            value="0"
+            step="0.01"
+        >
+
+    </div>
+
+</div>
+
+
+<div class="time-row">
+
+    <span>
+
+        Início:
+
+        <strong id="startDisplay">
+            00:00:00
+        </strong>
+
+    </span>
+
+
+    <span>
+
+        Fim:
+
+        <strong id="endDisplay">
+            00:00:10
+        </strong>
+
+    </span>
+
+</div>
+
+
+<!-- =====================================
+     GERAR
+===================================== -->
+
+<button
+    id="clipButton"
+    disabled
+>
+    ✂️ GERAR CLIP
+</button>
+
+
+<div
+    id="progress"
+    class="progress"
+>
+
+    <div
+        id="progressBar"
+        class="progress-bar"
+    ></div>
+
+</div>
+
+
+<div id="status"></div>
+
+
+<a
+    id="download"
+    href="/download/clip.mp4"
+>
+    ⬇️ BAIXAR CLIP
+</a>
+
+</div>
+
+
+<script>
+
+
+// ==========================================
+// ELEMENTOS
+// ==========================================
+
+const videoInput =
+    document.getElementById(
+        "videoInput"
+    );
+
+const preview =
+    document.getElementById(
+        "preview"
+    );
+
+const filename =
+    document.getElementById(
+        "filename"
+    );
+
+const clipButton =
+    document.getElementById(
+        "clipButton"
+    );
+
+const startRange =
+    document.getElementById(
+        "startRange"
+    );
+
+const endRange =
+    document.getElementById(
+        "endRange"
+    );
+
+const startDisplay =
+    document.getElementById(
+        "startDisplay"
+    );
+
+const endDisplay =
+    document.getElementById(
+        "endDisplay"
+    );
+
+const selection =
+    document.getElementById(
+        "selection"
+    );
+
+const status =
+    document.getElementById(
+        "status"
+    );
+
+const download =
+    document.getElementById(
+        "download"
+    );
+
+const twitchUrl =
+    document.getElementById(
+        "twitchUrl"
+    );
+
+const twitchButton =
+    document.getElementById(
+        "twitchButton"
+    );
+
+const vodInfo =
+    document.getElementById(
+        "vodInfo"
+    );
+
+const vodTitle =
+    document.getElementById(
+        "vodTitle"
+    );
+
+const vodDuration =
+    document.getElementById(
+        "vodDuration"
+    );
+
+const progress =
+    document.getElementById(
+        "progress"
+    );
+
+const progressBar =
+    document.getElementById(
+        "progressBar"
+    );
+
+
+// ==========================================
+// ESTADO
+// ==========================================
+
+let twitchVodUrl = null;
+
+let currentDuration = 0;
+
+let usingTwitch = false;
+
+
+// ==========================================
+// FORMATAR TEMPO
+// ==========================================
+
+function formatTime(seconds) {
+
+    seconds =
+        Math.floor(
+            Number(seconds) || 0
+        );
+
+    const hours =
+        Math.floor(
+            seconds / 3600
+        );
+
+    const minutes =
+        Math.floor(
+            (seconds % 3600) / 60
+        );
+
+    const secs =
+        seconds % 60;
+
+    return [
+
+        hours,
+
+        minutes,
+
+        secs
+
+    ]
+        .map(
+            value =>
+                String(value)
+                    .padStart(2, "0")
+        )
+        .join(":");
+}
+
+
+// ==========================================
+// ATUALIZAR TIMELINE
+// ==========================================
+
+function updateTimeline() {
+
+    if (
+        !Number.isFinite(
+            currentDuration
+        ) ||
+        currentDuration <= 0
+    ) {
+        return;
+    }
+
+    let start =
+        Number(
+            startRange.value
+        );
+
+    let end =
+        Number(
+            endRange.value
+        );
+
+
+    start =
+        Math.max(
+            0,
+            Math.min(
+                start,
+                currentDuration
+            )
+        );
+
+
+    end =
+        Math.max(
+            0,
+            Math.min(
+                end,
+                currentDuration
+            )
+        );
+
+
+    if (start >= end) {
+
+        if (
+            document.activeElement ===
+            startRange
+        ) {
+
+            start =
+                Math.max(
+                    0,
+                    end - 0.01
+                );
+
+            startRange.value =
+                start;
+
+        } else {
+
+            end =
+                Math.min(
+                    currentDuration,
+                    start + 0.01
+                );
+
+            endRange.value =
+                end;
+        }
+    }
+
+
+    const startPercent =
+        (
+            start /
+            currentDuration
+        ) * 100;
+
+
+    const endPercent =
+        (
+            end /
+            currentDuration
+        ) * 100;
+
+
+    selection.style.left =
+        startPercent + "%";
+
+
+    selection.style.width =
+        (
+            endPercent -
+            startPercent
+        ) + "%";
+
+
+    startDisplay.textContent =
+        formatTime(start);
+
+
+    endDisplay.textContent =
+        formatTime(end);
+
+
+    document.getElementById(
+        "start"
+    ).value =
+        formatTime(start);
+
+
+    document.getElementById(
+        "end"
+    ).value =
+        formatTime(end);
+
+
+    // Se for vídeo local,
+    // movimenta o player.
+
+    if (
+        !usingTwitch &&
+        preview.duration &&
+        Number.isFinite(
+            preview.duration
+        )
+    ) {
+
+        preview.currentTime =
+            start;
+    }
+}
+
+
+// ==========================================
+// CONFIGURAR DURAÇÃO
+// ==========================================
+
+function configureTimeline(
+    duration
+) {
+
+    currentDuration =
+        Number(duration);
+
+
+    if (
+        !Number.isFinite(
+            currentDuration
+        ) ||
+        currentDuration <= 0
+    ) {
+
+        throw new Error(
+            "Duração inválida."
+        );
+    }
+
+
+    startRange.min = 0;
+
+    startRange.max =
+        currentDuration;
+
+    startRange.step =
+        0.01;
+
+    startRange.value =
+        0;
+
+
+    endRange.min = 0;
+
+    endRange.max =
+        currentDuration;
+
+    endRange.step =
+        0.01;
+
+    endRange.value =
+        currentDuration;
+
+
+    document.getElementById(
+        "start"
+    ).value =
+        formatTime(0);
+
+
+    document.getElementById(
+        "end"
+    ).value =
+        formatTime(
+            currentDuration
+        );
+
+
+    updateTimeline();
+}
+
+
+// ==========================================
+// CARREGAR VOD
+// ==========================================
+
+twitchButton.addEventListener(
+    "click",
+    async () => {
+
+        const url =
+            twitchUrl.value.trim();
+
+
+        if (!url) {
+
+            status.textContent =
+                "❌ Cole uma URL da Twitch.";
+
+            return;
+        }
+
+
+        if (
+            !url.includes(
+                "twitch.tv/videos/"
+            )
+        ) {
+
+            status.textContent =
+                "❌ URL de VOD da Twitch inválida.";
+
+            return;
+        }
+
+
+        twitchButton.disabled =
+            true;
+
+        clipButton.disabled =
+            true;
+
+
+        download.style.display =
+            "none";
+
+
+        vodInfo.style.display =
+            "none";
+
+
+        status.textContent =
+            "⏳ Consultando VOD da Twitch...";
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/twitch",
+                    {
+                        method:
+                            "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:
+                            JSON.stringify({
+                                url
+                            })
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.error ||
+                    "Erro ao consultar VOD."
+                );
+            }
+
+
+            console.log(
+                "VOD:",
+                data
+            );
+
+
+            // Guarda URL
+
+            twitchVodUrl =
+                url;
+
+            usingTwitch =
+                true;
+
+
+            // Informações
+
+            vodTitle.textContent =
+                data.title;
+
+
+            vodDuration.textContent =
+                "Duração: " +
+                formatTime(
+                    data.duration
+                );
+
+
+            vodInfo.style.display =
+                "block";
+
+
+            // Configura timeline
+
+            configureTimeline(
+                data.duration
+            );
+
+
+            // O VOD não é baixado aqui.
+
+            preview.style.display =
+                "none";
+
+
+            filename.textContent =
+                "VOD da Twitch selecionado";
+
+
+            clipButton.disabled =
+                false;
+
+
+            status.textContent =
+                "✅ VOD pronto. Escolha o trecho e clique em GERAR CLIP.";
+
+
+        } catch (error) {
+
+            console.error(
+                error
+            );
+
+
+            twitchVodUrl =
+                null;
+
+
+            clipButton.disabled =
+                true;
+
+
+            status.textContent =
+                "❌ " +
+                error.message;
+
+        } finally {
+
+            twitchButton.disabled =
+                false;
+        }
+    }
+);
+
+
+// ==========================================
+// SLIDER INÍCIO
+// ==========================================
+
+startRange.addEventListener(
+    "input",
+    () => {
+
+        let start =
+            Number(
+                startRange.value
+            );
+
+        const end =
+            Number(
+                endRange.value
+            );
+
+
+        if (start >= end) {
+
+            start =
+                Math.max(
+                    0,
+                    end - 0.01
+                );
+
+            startRange.value =
+                start;
+        }
+
+
+        updateTimeline();
+    }
+);
+
+
+// ==========================================
+// SLIDER FIM
+// ==========================================
+
+endRange.addEventListener(
+    "input",
+    () => {
+
+        const start =
+            Number(
+                startRange.value
+            );
+
+        let end =
+            Number(
+                endRange.value
+            );
+
+
+        if (end <= start) {
+
+            end =
+                Math.min(
+                    currentDuration,
+                    start + 0.01
+                );
+
+            endRange.value =
+                end;
+        }
+
+
+        updateTimeline();
+    }
+);
+
+
+// ==========================================
+// CAMPOS MANUAIS
+// ==========================================
+
+document
+    .getElementById("start")
+    .addEventListener(
+        "change",
+        () => {
+
+            const value =
+                document
+                    .getElementById(
+                        "start"
+                    )
+                    .value;
+
+
+            const seconds =
+                parseTimeInput(
+                    value
+                );
+
+
+            if (
+                seconds === null
+            ) {
+
+                return;
+            }
+
+
+            startRange.value =
+                Math.min(
+                    seconds,
+                    currentDuration
+                );
+
+
+            updateTimeline();
+        }
+    );
+
+
+document
+    .getElementById("end")
+    .addEventListener(
+        "change",
+        () => {
+
+            const value =
+                document
+                    .getElementById(
+                        "end"
+                    )
+                    .value;
+
+
+            const seconds =
+                parseTimeInput(
+                    value
+                );
+
+
+            if (
+                seconds === null
+            ) {
+
+                return;
+            }
+
+
+            endRange.value =
+                Math.min(
+                    seconds,
+                    currentDuration
+                );
+
+
+            updateTimeline();
+        }
+    );
+
+
+// ==========================================
+// PARSE TEMPO
+// ==========================================
+
+function parseTimeInput(
+    value
+) {
+
+    if (
+        typeof value !==
+        "string"
+    ) {
+        return null;
+    }
+
+
+    const parts =
+        value
+            .trim()
+            .split(":")
+            .map(Number);
+
+
+    if (
+        parts.length !== 3 ||
+        parts.some(
+            Number.isNaN
+        )
+    ) {
+
+        return null;
+    }
+
+
+    const [
+        hours,
+        minutes,
+        seconds
+    ] = parts;
+
+
+    if (
+        hours < 0 ||
+        minutes < 0 ||
+        minutes >= 60 ||
+        seconds < 0 ||
+        seconds >= 60
+    ) {
+
+        return null;
+    }
+
+
+    return (
+        hours * 3600 +
+        minutes * 60 +
+        seconds
+    );
+}
+
+
+// ==========================================
+// UPLOAD LOCAL
+// ==========================================
+
+videoInput.addEventListener(
+    "change",
+    async () => {
+
+        const file =
+            videoInput.files[0];
+
+
+        if (!file) {
+            return;
+        }
+
+
+        // Sai do modo Twitch
+
+        twitchVodUrl =
+            null;
+
+        usingTwitch =
+            false;
+
+
+        filename.textContent =
+            file.name;
+
+
+        const url =
+            URL.createObjectURL(
+                file
+            );
+
+
+        preview.src =
+            url;
+
+
+        preview.style.display =
+            "block";
+
+
+        clipButton.disabled =
+            true;
+
+
+        status.textContent =
+            "⏳ Enviando vídeo...";
+
+
+        const formData =
+            new FormData();
+
+
+        formData.append(
+            "video",
+            file
+        );
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/upload",
+                    {
+                        method:
+                            "POST",
+
+                        body:
+                            formData
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.error ||
+                    "Erro ao enviar vídeo."
+                );
+            }
+
+
+            status.textContent =
+                "⏳ Vídeo enviado. Lendo duração...";
+
+
+            preview.addEventListener(
+                "loadedmetadata",
+                () => {
+
+                    if (
+                        Number.isFinite(
+                            preview.duration
+                        )
+                    ) {
+
+                        configureTimeline(
+                            preview.duration
+                        );
+
+                        clipButton.disabled =
+                            false;
+
+                        status.textContent =
+                            "✅ Vídeo pronto.";
+
+                    }
+
+                },
+                {
+                    once: true
+                }
+            );
+
+
+            preview.load();
+
+
+        } catch (error) {
+
+            console.error(
+                error
+            );
+
+
+            status.textContent =
+                "❌ " +
+                error.message;
+        }
+    }
+);
+
+
+// ==========================================
+// GERAR CLIP
+// ==========================================
+
+clipButton.addEventListener(
+    "click",
+    createClip
+);
+
+
+async function createClip() {
+
+    const start =
+        document.getElementById(
+            "start"
+        ).value;
+
+
+    const end =
+        document.getElementById(
+            "end"
+        ).value;
+
+
+    const startSeconds =
+        parseTimeInput(
+            start
+        );
+
+
+    const endSeconds =
+        parseTimeInput(
+            end
+        );
+
+
+    if (
+        startSeconds === null ||
+        endSeconds === null
+    ) {
+
+        status.textContent =
+            "❌ Use o formato HH:MM:SS.";
+
+        return;
+    }
+
+
+    if (
+        endSeconds <= startSeconds
+    ) {
+
+        status.textContent =
+            "❌ O fim precisa ser maior que o início.";
+
+        return;
+    }
+
+
+    clipButton.disabled =
+        true;
+
+
+    twitchButton.disabled =
+        true;
+
+
+    download.style.display =
+        "none";
+
+
+    progress.style.display =
+        "block";
+
+
+    progressBar.style.width =
+        "5%";
+
+
+    // ======================================
+    // TWITCH
+    // ======================================
+
+    if (twitchVodUrl) {
+
+        status.textContent =
+            "⏳ Baixando somente o trecho selecionado da Twitch...";
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/twitch-clip",
+                    {
+                        method:
+                            "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:
+                            JSON.stringify({
+                                url:
+                                    twitchVodUrl,
+
+                                start:
+                                    start,
+
+                                end:
+                                    end
+                            })
+                    }
+                );
+
+
+            progressBar.style.width =
+                "70%";
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.error ||
+                    "Erro ao criar clip."
+                );
+            }
+
+
+            progressBar.style.width =
+                "100%";
+
+
+            status.textContent =
+                "✅ Clip criado com sucesso!";
+
+
+            download.href =
+                data.download;
+
+
+            download.style.display =
+                "block";
+
+
+        } catch (error) {
+
+            console.error(
+                error
+            );
+
+
+            progressBar.style.width =
+                "0%";
+
+
+            status.textContent =
+                "❌ " +
+                error.message;
+
+        } finally {
+
+            clipButton.disabled =
+                false;
+
+            twitchButton.disabled =
+                false;
+        }
+
+
+        return;
+    }
+
+
+    // ======================================
+    // VÍDEO LOCAL
+    // ======================================
+
+    status.textContent =
+        "⏳ Criando clip...";
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/clip",
+                {
+                    method:
+                        "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            start,
+                            end
+                        })
+                }
+            );
+
+
+        progressBar.style.width =
+            "80%";
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.error ||
+                "Erro ao criar clip."
+            );
+        }
+
+
+        progressBar.style.width =
+            "100%";
+
+
+        status.textContent =
+            "✅ Clip criado!";
+
+
+        download.href =
+            data.download;
+
+
+        download.style.display =
+            "block";
+
+
+    } catch (error) {
+
+        console.error(
+            error
+        );
+
+
+        progressBar.style.width =
+            "0%";
+
+
+        status.textContent =
+            "❌ " +
+            error.message;
+
+    } finally {
+
+        clipButton.disabled =
+            false;
+
+        twitchButton.disabled =
+            false;
+    }
+}
+
+</script>
+
+</body>
+
+</html>
