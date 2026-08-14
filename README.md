@@ -95,7 +95,7 @@ Os componentes necessários são distribuídos com o aplicativo.
 ### Clonar
 
 ```bash
-git clone https://github.com/SEU-USUARIO/twitch-clipper.git
+git clone https://github.com/PanqueK/twitch-clipper.git
 cd twitch-clipper
 ```
 
